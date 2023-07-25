@@ -1,3 +1,4 @@
+import ballerinax/salesforce;
 import ballerina/http;
 
 type Attributes record {
@@ -10,8 +11,8 @@ type RecordsItem record {
     string Id;
     string FirstName;
     string LastName;
-    string Email;
-    string Phone;
+    (anydata|string)? Email;
+    (anydata|string)? Phone;
 };
 
 type ContactsInput record {
@@ -22,8 +23,8 @@ type ContactsInput record {
 
 type ContactsItem record {
     string fullName;
-    string phoneNumber;
-    string email;
+    (anydata|string)? phoneNumber;
+    (anydata|string)? email;
     string id;
 };
 
@@ -31,6 +32,13 @@ type ContactsOutput record {
     int numberOfContacts;
     ContactsItem[] contacts;
 };
+
+type SalesforceConfig record {|
+    string baseUrl;
+    string token;
+|};
+
+configurable SalesforceConfig sfConfig = ?;
 
 # A service representing a network-accessible API
 # bound to port `9090`.
@@ -54,6 +62,24 @@ service / on new http:Listener(9090) {
         ContactsOutput contactsOutput = transform(contactsInput);
         return contactsOutput;
     }
+
+    # A resource for fetching contacts from salesforce 
+    # + return - Contacts collection or error
+    resource function get contacts() returns ContactsOutput|error? {
+
+        salesforce:SoqlResult|salesforce:Error soqlResult = salesforceEp->getQueryResult("SELECT Id,FirstName,LastName,Email,Phone FROM Contact");
+
+        if (soqlResult is salesforce:SoqlResult) {
+            json results = soqlResult.toJson();
+            ContactsInput salesforceContactsResponse = check results.cloneWithType(ContactsInput);
+            ContactsOutput contacts = transform(salesforceContactsResponse);
+            return contacts;
+
+        } else {
+            return error(soqlResult.message());
+        }
+    }
+
 }
 
 function transform(ContactsInput contactsInput) returns ContactsOutput => {
@@ -66,3 +92,10 @@ function transform(ContactsInput contactsInput) returns ContactsOutput => {
             id: recordsItem.Id
         }
 };
+
+salesforce:Client salesforceEp = check new (config = {
+    baseUrl: sfConfig.baseUrl,
+    auth: {
+        token: sfConfig.token
+    }
+});

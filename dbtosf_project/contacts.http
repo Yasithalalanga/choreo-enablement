@@ -1,0 +1,10 @@
+### SALESFORCE API VERSION OF YOUR CHOICE
+@sf_api_version=56.0
+### LIST ALL EXISTING CONTACTS IN SALESFORCE BY QUERY
+
+@sf_instance_url=https://livecodex-dev-ed.develop.my.salesforce.com
+@sf_token=00D5j00000C9Jlb!AQYAQLBooUfWTDr4WvyJ904dQfUlfKBgvx685OXmNcqnsS_7uZGTj0udg9CLBOstPo40JWX0q94XrUJfLvMwIKbgpdXMhIyo
+
+GET {{sf_instance_url}}/services/data/v{{sf_api_version}}/query?q=SELECT Id,FirstName,LastName,Email,Phone FROM Contact
+Content-Type: application/json
+Authorization: Bearer {{sf_token}}

@@ -1,0 +1,21 @@
+### YOUR SALESFORCE CREDENTIALS TO GENERATE AN ACCESS TOKEN
+@sf_user=yasitha@livecodex.com
+@sf_password=Salient20006XTLVXng3DkwQ6erC32BWwdd
+@sf_client_id=3MVG9pRzvMkjMb6m73V9.1UzyNJWndxL2ILzU0IrbkGRgXozzNKeRTMkGOZKwrLcD5g2NWHG_bgoNBZbkzz9S
+@sf_client_secret=37FE9E8985F5202D5A37C41EFA3012D6B3B473E7AE4FD066BDE5990A2C2D0AFB
+
+### GENERATES AN ACCESS TOKEN
+# @name createToken
+
+POST https://login.salesforce.com/services/oauth2/token 
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=password&client_id={{sf_client_id}}&client_secret={{sf_client_secret}}&username={{sf_user}}&password={{sf_password}}
+
+### PRESERVES THE SALESFORCE ACCESS TOKEN IN THE REST CLIENT CONTEXT
+# @sf_token={{createToken.response.body.access_token}}
+# ### PRESERVES YOUR SALESFORCE INSTANCE URL IN THE REST CLIENT CONTEXT
+# @sf_instance_url={{createToken.response.body.instance_url}}
+# ### CHECKS THE AVAILABLE API VERSIONS. PICK THE LATEST AND SET @sf_api_version=56.0 BELOW ACCORDINGLY
+# GET {{sf_instance_url}}/services/data
+# Authorization: Bearer {{sf_token}}
