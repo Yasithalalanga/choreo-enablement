@@ -46,6 +46,7 @@ public function main() returns error? {
         bulk:JobInfo batchInfo = check salesforceEp->closeJob(contactInfo);
 
         io:print("Finished inserting contacts to Salesforce. Job Id: " + batchInfo.id.toString() + "\n");
+
     } on fail var e {
         io:println(e.message());
     }
